@@ -12,7 +12,7 @@ app.secret_key = "talentmatch_super_secret_key"
 DB_CONFIG = {
     "host": "localhost",
     "user": "root",
-    "password": "ishan@05",  
+    "password": "********",  
     "database": "talentmatch_db"
 }
 
