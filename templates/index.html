@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row align-items-center min-vh-75 mt-4">
+    <div class="col-lg-6">
+        <h1 class="display-4 fw-bold">Precision Matching for Next-Gen Talent.</h1>
+        <p class="lead text-muted mt-3">
+            TalentMatch AI parses student skillsets, past projects, and interests using TF-IDF NLP vector analysis to deliver calibrated internship recommendations while providing employers real-time candidate analytics.
+        </p>
+        <div class="mt-4 gap-3 d-flex">
+            <a href="{{ url_for('student') }}" class="btn btn-primary btn-lg px-4">Find Internships</a>
+            <a href="{{ url_for('employer') }}" class="btn btn-outline-dark btn-lg px-4">Employer Portal</a>
+        </div>
+    </div>
+    <div class="col-lg-6 mt-4 mt-lg-0">
+        <div class="card p-4 border-0 shadow-sm bg-light">
+            <h5 class="fw-bold mb-3">How the Engine Computes</h5>
+            <ul class="list-group list-group-flush bg-transparent">
+                <li class="list-group-item bg-transparent">1. Text tokenization & n-gram vectorization.</li>
+                <li class="list-group-item bg-transparent">2. Sublinear TF-IDF weighting on skill tokens.</li>
+                <li class="list-group-item bg-transparent">3. Cosine similarity projection to index match %.</li>
+                <li class="list-group-item bg-transparent">4. Dynamic visual analytics for hiring teams.</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

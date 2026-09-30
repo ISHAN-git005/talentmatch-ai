@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm p-3 bg-white">
+            <span class="text-muted small">Total Internship Postings</span>
+            <h2 class="fw-bold text-primary mb-0">{{ metrics.total_postings }}</h2>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm p-3 bg-white">
+            <span class="text-muted small">Total Candidates Evaluated</span>
+            <h2 class="fw-bold text-success mb-0">{{ metrics.total_applicants }}</h2>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm p-3 bg-white">
+            <span class="text-muted small">Average Match Quality</span>
+            <h2 class="fw-bold text-warning mb-0">{{ metrics.avg_match }}%</h2>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-5">
+        <div class="card shadow-sm border-0 p-4">
+            <h5 class="fw-bold mb-3">Post a New Opportunity</h5>
+            <form method="POST" action="{{ url_for('employer') }}">
+                <div class="mb-2">
+                    <label class="form-label small">Job Title</label>
+                    <input type="text" name="title" class="form-control" required placeholder="e.g. Backend Software Intern">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label small">Company Name</label>
+                    <input type="text" name="company" class="form-control" required placeholder="e.g. NextGen Tech">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label small">Location</label>
+                    <input type="text" name="location" class="form-control" required placeholder="e.g. Remote / Hybrid">
+                </div>
+                <div class="mb-2">
+                    <label class="form-label small">Key Skills</label>
+                    <input type="text" name="required_skills" class="form-control" required placeholder="e.g. Python, SQL, REST APIs">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label small">Job Description</label>
+                    <textarea name="description" class="form-control" rows="3" required placeholder="Role responsibilities and context..."></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary w-100">Publish Posting</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="card shadow-sm border-0 p-4">
+            <h5 class="fw-bold mb-3">Candidate Match Distribution</h5>
+            <canvas id="matchChart" height="180"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm border-0 p-4">
+    <h5 class="fw-bold mb-3">Talent Pool Applications</h5>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0">
+            <thead class="table-light">
+                <tr>
+                    <th>Candidate</th>
+                    <th>Internship Applied</th>
+                    <th>Candidate Skills</th>
+                    <th>Match Score</th>
+                    <th>Applied Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% if candidates %}
+                    {% for c in candidates %}
+                    <tr>
+                        <td>
+                            <strong>{{ c.name }}</strong><br>
+                            <small class="text-muted">{{ c.email }}</small>
+                        </td>
+                        <td>{{ c.internship_title }}</td>
+                        <td><small>{{ c.skills }}</small></td>
+                        <td>
+                            <span class="badge {% if c.match_score >= 60 %}bg-success{% elif c.match_score >= 30 %}bg-warning text-dark{% else %}bg-danger{% endif %}">
+                                {{ c.match_score }}%
+                            </span>
+                        </td>
+                        <td><small class="text-muted">{{ c.applied_at.strftime('%Y-%m-%d') }}</small></td>
+                    </tr>
+                    {% endfor %}
+                {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-3">No applications submitted yet.</td>
+                    </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    const candidatesData = {{ candidates | tojson }};
+    let high = 0, medium = 0, low = 0;
+
+    candidatesData.forEach(c => {
+        if(c.match_score >= 60) high++;
+        else if(c.match_score >= 30) medium++;
+        else low++;
+    });
+
+    const ctx = document.getElementById('matchChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'doughnut',
+        data: {
+            labels: ['High Fit (>=60%)', 'Moderate Fit (30-59%)', 'Low Fit (<30%)'],
+            datasets: [{
+                data: [high, medium, low],
+                backgroundColor: ['#198754', '#ffc107', '#dc3545'],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: { position: 'bottom' }
+            }
+        }
+    });
+</script>
+{% endblock %}
